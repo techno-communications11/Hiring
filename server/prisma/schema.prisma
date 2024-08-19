@@ -1,0 +1,39 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  email     String        @unique
+  password  String
+  market    String
+}
+
+model Application {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  email        String
+  phone        Int
+  referBy      String
+  referedId    String
+  market       String
+  profileStatus String? @default("")
+  comments     String? @default("")
+  createdAt    DateTime? @default(now())
+}
+
+model Market {
+   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+   market String @unique
+}
+model hosts{
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  email String @unique
+  calendlyUsername String
+}
