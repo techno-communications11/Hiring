@@ -13,7 +13,7 @@ function Screening() {
   const phoneRef = useRef();
   const referredByRef = useRef();
   const referenceNtidRef = useRef();
-//   const [showModel,setShowModal]=useState(false);
+
 
   const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const regexPhone = /^[0-9]{10}$/;

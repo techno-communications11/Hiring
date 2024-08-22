@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Table, Button, Modal, Dropdown, Form } from 'react-bootstrap';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format, parseISO } from 'date-fns';
+import { getAuthHeaders } from '../Authrosization/getAuthHeaders';
 
 function New() {
   const [profiles, setProfiles] = useState([]);
@@ -14,6 +15,7 @@ function New() {
   const [moveForwardMenu, setMoveForwardMenu] = useState(false);
   const [selectedHost, setSelectedHost] = useState(null);
   const [hosts, setHosts] = useState([]);
+  const [screeners, setScreeners] = useState([]);
   const [calendlyUrl, setCalendlyUrl] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [ChangeScrenningMenu, setChangeScrenningMenu] = useState(false);
@@ -21,7 +23,7 @@ function New() {
     const fetchProfiles = async () => {
       try {
         const response = await axios.get('http://localhost:3001/api/auth/getpublicprofile', {
-          withCredentials: true,
+          headers: getAuthHeaders(),
         });
         setProfiles(response.data);
       } catch (error) {
@@ -36,9 +38,13 @@ function New() {
     const fetchHosts = async () => {
       try {
         const response = await axios.get('http://localhost:3001/api/auth/host-get', {
-          withCredentials: true,
+          headers: getAuthHeaders(),
         });
-        setHosts(response.data);
+
+        const interviewers = response.data.filter(host => host.role === 'Interviewer');
+        const ScreeningManagers = response.data.filter(host => host.role === 'Screening Manager');
+        setHosts(interviewers);
+        setScreeners(ScreeningManagers)
       } catch (error) {
         setError('Failed to fetch hosts. Please try again later.');
       }
@@ -70,7 +76,7 @@ function New() {
 
     try {
       const response = await axios.put('http://localhost:3001/api/auth/updatestatus', status, {
-        withCredentials: true,
+        headers: getAuthHeaders(),
       });
       if (response.status === 200) {
         setProfiles(prevProfiles => prevProfiles.filter(profile => profile.id !== profileId));
@@ -120,7 +126,7 @@ function New() {
 
   return (
     <div>
-      <h2 className="my-4 font fw-bolder">Public Profiles</h2>
+      <h2 className="my-4 font fw-bolder text-center">Public Profiles</h2>
       {error && <div className="alert alert-danger">{error}</div>}
       <Form className="mb-4">
         <Form.Control
@@ -207,20 +213,11 @@ function New() {
             Change assignTo
           </Dropdown.Toggle>
           <Dropdown.Menu className='w-100 overflow-auto' style={{ maxHeight: '200px' }}>
-            {/* {screnning.sort((a, b) => a.name.localeCompare(b.name)).map((host, index) => ( */}
-              <Dropdown.Item >
-                {/* {host.name} */}
-                Tharun
+          {screeners.sort((a, b) => a.name.localeCompare(b.name)).map((host, index) => (
+              <Dropdown.Item key={index} eventKey={host.name}>
+                {host.name}
               </Dropdown.Item>
-              <Dropdown.Item >
-                {/* {host.name} */}
-                kiran
-              </Dropdown.Item>
-              <Dropdown.Item >
-                {/* {host.name} */}
-                varun
-              </Dropdown.Item>
-            {/* ))} */}
+            ))}
           </Dropdown.Menu>
         </Dropdown>
       </div>
@@ -230,7 +227,7 @@ function New() {
     <div className='mx-2 mx-md-5 p-1 p-md-2 text-danger' style={{ border: '1px dashed' }}>
       <h4 className='text-center'>Note:</h4>
       <span>
-        * Only Click 'Delete' button after you scheduled the meeting
+        * Only Click 'Next' button after you scheduled the meeting
         <br />
         * This button makes data disappear to simplify the view of the page so that only unscheduled will be visible to you
       </span>

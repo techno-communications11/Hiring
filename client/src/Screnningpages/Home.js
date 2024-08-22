@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Card, Container, Row, Col, Modal, Button, Form, Table } from 'react-bootstrap';
 import { format, parseISO } from 'date-fns';
+import { getAuthHeaders } from '../Authrosization/getAuthHeaders';
 
 function Home() {
   const [counts, setCounts] = useState({
@@ -22,7 +23,7 @@ function Home() {
     const fetchCounts = async () => {
       try {
         const response = await axios.get('http://localhost:3001/api/auth/profilecounts', {
-          withCredentials: true,
+          headers: getAuthHeaders(),
         });
         setCounts(response.data);
       } catch (error) {
@@ -54,7 +55,7 @@ function Home() {
     try {
       const response = await axios.get('http://localhost:3001/api/auth/getprofiles', {
         params: { status },
-        withCredentials: true,
+        headers: getAuthHeaders(),
       });
       setProfiles(response.data);
       setFilteredProfiles(response.data);
@@ -75,10 +76,10 @@ function Home() {
   const formatTime = (date) => {
     return date ? format(parseISO(date), 'EEE dd MMM yyyy HH:mm') : 'N/A';
   };
-
+  const name=localStorage.getItem('name')
   return (
     <Container style={{ minHeight: "80vh" }} className='font'>
-      <h2 className="my-4 text-center fw-bolder" >Profile Counts</h2>
+      <h2 className="my-4 text-start fw-bolder" >{`Screening Dahshboard ${name}`}</h2>
       {error && <div className="alert alert-danger">{error}</div>}
       <Row>
         <Col md={4} className="mb-4">
@@ -123,7 +124,7 @@ function Home() {
         </Col>
       </Row>
 
-      <Modal show={showModal} onHide={handleCloseModal} size="lg" className="custom-modal-width" >
+      <Modal show={showModal} onHide={handleCloseModal} size='xl' className="custom-modal-width"  style={{marginTop:'7vh'}}  >
         <Modal.Header closeButton>
           <Modal.Title>{selectedStatus} Profiles</Modal.Title>
         </Modal.Header>

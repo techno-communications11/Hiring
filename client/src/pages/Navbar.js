@@ -3,23 +3,43 @@ import { Navbar, Nav, Button, Container } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaUser } from "react-icons/fa";
 import axios from 'axios';
+// import { getAuthHeaders } from '../Authorization/getAuthHeaders';
+import { getAuthHeaders } from '../Authrosization/getAuthHeaders';
+import { jwtDecode } from 'jwt-decode';
 
 function AppNavbar() {
   const navigate = useNavigate(); 
   const [error, setError] = useState('');
-  const [counts, setCounts] = useState({}); 
-  const role=localStorage.getItem('role');
+  const [counts, setCounts] = useState({});
+  const token = localStorage.getItem('token');
+  let role = null;
+
+  // Decode the token if it exists
+  if (token) {
+    try {
+      const decodedToken = jwtDecode(token);
+      role = decodedToken.role;
+    } catch (error) {
+      console.error('Token decoding failed', error);
+    }
+  }
+  // const role = localStorage.getItem('role');
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:3001/api/auth/logout', {}, {
-        withCredentials: true 
-      });
+      // Optional: Notify server of logout if needed
+      // await axios.post('http://localhost:3001/api/auth/logout', {}, { withCredentials: true });
 
+      // Clear token and user data from local storage
       localStorage.removeItem('token');
-      navigate('/public');
+      localStorage.removeItem('role');
+      localStorage.removeItem('name');
+      
+      // Redirect to home page
+      navigate('/');
     } catch (error) {
       console.error("Error logging out:", error);
+      setError('Logout failed. Please try again later.');
     }
   };
 
@@ -27,7 +47,7 @@ function AppNavbar() {
     const fetchCounts = async () => {
       try {
         const response = await axios.get('http://localhost:3001/api/auth/newCounts', {
-          withCredentials: true,
+          headers: getAuthHeaders(),
         });
         setCounts(response.data);
       } catch (error) {
@@ -35,57 +55,56 @@ function AppNavbar() {
       }
     };
 
-    fetchCounts();
-  }, [counts]);
+    fetchCounts(); // Initial call on component mount
+  }, []); // Empty dependency array ensures this runs only once
 
   return (
-    <Navbar style={{ backgroundColor:'#E1017'}} expand="lg" className='shadow-sm'>
+    <Navbar expand="lg" className='shadow-sm'>
       <Container fluid>
-        <Navbar.Brand  className=' fw-bolder'>
-          <img src="/logo.png" alt="Logo" width="30" height="30" className=" text-decoration-none d-inline-block align-top" />
+        <Navbar.Brand className='fw-bolder'>
+          <img src="/logo.png" alt="Logo" width="30" height="30" className="d-inline-block align-top" />
           {' '}TECHNO COMMUNICATION LLC
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarSupportedContent" />
         <Navbar.Collapse id="navbarSupportedContent">
-        
           <Nav className="ms-auto">
-            {
-              role==='Screening Manager'&& <Nav.Link as={Link} to="/screnning" className='fw-bolder text-primary'>
-              List Profile
-            </Nav.Link>
-            }
-         
-            {role==='Admin'&&<Nav.Link as={Link} to="/register" className='fw-bolder text-primary'>
-              register
-            </Nav.Link>}
-            {
-              role==='Screening Manager'&& <Nav.Link
-              as={Link}
-              to="/new"
-              className='fw-bolder'
-              style={{
-                position: 'relative',
-                display: 'inline-block',
-                background: 'linear-gradient(90deg, rgba(63,94,251,1) 0%, rgba(180,27,148,1) 81%)',
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-                color: 'transparent', 
-                fontWeight: 'bold', 
-              }}
-            >
-              New{counts.totalProfiles>0&&
-              <sup className='text-white bg-danger px-1 rounded-circle' style={{fontSize:'10px' }}>
-                {counts.totalProfiles}
-              </sup> }
-              <span>{error}</span>
-            </Nav.Link>
-            }
-            
+            {role === 'Screening Manager' && (
+              <Nav.Link as={Link} to="/screening" className='fw-bolder text-primary'>
+                List Profile
+              </Nav.Link>
+            )}
+            {role === 'Admin' && (
+              <Nav.Link as={Link} to="/register" className='fw-bolder text-primary'>
+                Register
+              </Nav.Link>
+            )}
+            {role === 'Screening Manager' && (
+              <Nav.Link
+                as={Link}
+                to="/new"
+                className='fw-bolder'
+                style={{
+                  position: 'relative',
+                  display: 'inline-block',
+                  background: 'linear-gradient(90deg, rgba(63,94,251,1) 0%, rgba(180,27,148,1) 81%)',
+                  WebkitBackgroundClip: 'text',
+                  backgroundClip: 'text',
+                  color: 'transparent',
+                  fontWeight: 'bold',
+                }}
+              >
+                New 
+                {counts.totalProfiles > 0 && (
+                  <sup className='text-white bg-danger px-1 rounded-circle' style={{ fontSize: '10px' }}>
+                    {counts.totalProfiles}
+                  </sup>
+                )}
+              </Nav.Link>
+            )}
+            {error && <div className='text-danger text-center'>{error}</div>}
             <Nav.Link as={Link} to="/profile">
               <FaUser className='me-4' />
             </Nav.Link>
-           
-            
             <Button variant="danger" className='me-4' onClick={handleLogout}>
               Logout
             </Button>
