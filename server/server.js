@@ -4,6 +4,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
 import authrouter from './Routes/user.auth.js';
+// import authenticateJWT from './components/authenticateJwt.js';
 
 
 
@@ -22,7 +23,9 @@ app.use(cookieParser())
 
 app.use('/api/auth', authrouter);
 
-
+// app.get('/api/protected', authenticateJWT, (req, res) => {
+//     res.json({ message: 'This is a protected route', user: req.user });
+//   });
 
 app.use((err, req, res, next) => {
     res.status(500).send('Something broke!');

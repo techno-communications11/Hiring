@@ -10,6 +10,8 @@ const ProfileData = async (req, res) => {
         id: true,
         email: true,
         market: true,
+        name:true,
+        calendlyUsername:true
       },
     });
 
