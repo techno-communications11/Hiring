@@ -8,14 +8,18 @@ generator client {
 }
 
 model User {
-  id        String        @id @default(auto()) @map("_id") @db.ObjectId
-  email     String        @unique
-  password  String
-  market    String
+  id               String   @id @map("_id")
+  name             String
+  email            String   @unique
+  market           String?
+  role             String
+  calendlyUsername String?
+  password         String
 }
 
+
 model Application {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  id           String   @id  @map("_id")
   name         String
   email        String
   phone        Int
@@ -30,10 +34,4 @@ model Application {
 model Market {
    id        String   @id @default(auto()) @map("_id") @db.ObjectId
    market String @unique
-}
-model hosts{
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name String
-  email String @unique
-  calendlyUsername String
 }

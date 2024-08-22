@@ -1,4 +1,4 @@
-import prisma from "../lib/prisma.js";
+import prisma from "../lib/Prisma.js";
 export const GetProfiles=async(req,res)=>{
     try {
         const { status } = req.query; // e.g., 'Total', 'Moved', 'No Response', 'Rejected', 'Not Interested'

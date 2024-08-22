@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Table, Button, Modal, Dropdown, Form } from 'react-bootstrap';
+import { Table, Button, Modal, Dropdown, Form } from 'react-bootstrap';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format, parseISO } from 'date-fns';
 
@@ -16,7 +16,7 @@ function New() {
   const [hosts, setHosts] = useState([]);
   const [calendlyUrl, setCalendlyUrl] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-
+  const [ChangeScrenningMenu, setChangeScrenningMenu] = useState(false);
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
@@ -85,6 +85,12 @@ function New() {
   const handleMoveForwardMenuToggle = () => {
     setMoveForwardMenu(!moveForwardMenu);
   };
+  const handleChangeScrenningToggle = () => {
+    setChangeScrenningMenu(!ChangeScrenningMenu);
+  };
+  const handleSelect=()=>{
+
+  }
 
   const handleSelectHost = async (eventKey) => {
     const selected = hosts.find(host => host.name === eventKey);
@@ -113,7 +119,7 @@ function New() {
   const sortedProfiles = [...filteredProfiles].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return (
-    <div  style={{minHeight:'50rem'}}  >
+    <div>
       <h2 className="my-4 font fw-bolder">Public Profiles</h2>
       {error && <div className="alert alert-danger">{error}</div>}
       <Form className="mb-4">
@@ -180,7 +186,7 @@ function New() {
           onChange={(e) => setComment(e.target.value)}
         />
       </Form.Group>
-      <div className="d-flex  mx-3 flex-column flex-md-row justify-content-around mt-3">
+      <div className="d-flex  mx-5 flex-column flex-md-row justify-content-around mt-3">
         <Button variant="danger" className="mb-2 mb-md-0 bg-transparent text-dark" onClick={() => handleActionClick(selectedProfile.id, 'Reject')}>Reject</Button>
         <Button variant="warning" className="mb-2 mb-md-0 bg-transparent text-dark" onClick={() => handleActionClick(selectedProfile.id, 'No Response')}>No Response</Button>
         <Dropdown onSelect={handleSelectHost} show={moveForwardMenu} onToggle={handleMoveForwardMenuToggle}>
@@ -196,6 +202,27 @@ function New() {
           </Dropdown.Menu>
         </Dropdown>
         <Button variant="warning" className="mb-2 mb-md-0 bg-transparent text-dark" onClick={() => handleActionClick(selectedProfile.id, 'Not Interested')}>Not Interested</Button>
+        <Dropdown onSelect={handleSelect} show={ChangeScrenningMenu} onToggle={handleChangeScrenningToggle}>
+          <Dropdown.Toggle className='w-100 bg-transparent text-dark border-secondary' id="dropdown-basic">
+            Change assignTo
+          </Dropdown.Toggle>
+          <Dropdown.Menu className='w-100 overflow-auto' style={{ maxHeight: '200px' }}>
+            {/* {screnning.sort((a, b) => a.name.localeCompare(b.name)).map((host, index) => ( */}
+              <Dropdown.Item >
+                {/* {host.name} */}
+                Tharun
+              </Dropdown.Item>
+              <Dropdown.Item >
+                {/* {host.name} */}
+                kiran
+              </Dropdown.Item>
+              <Dropdown.Item >
+                {/* {host.name} */}
+                varun
+              </Dropdown.Item>
+            {/* ))} */}
+          </Dropdown.Menu>
+        </Dropdown>
       </div>
     </Form>
   </Modal.Body>
@@ -208,7 +235,7 @@ function New() {
         * This button makes data disappear to simplify the view of the page so that only unscheduled will be visible to you
       </span>
     </div>
-    <Button variant="danger" className="mb-2 mb-md-0 bg-transparent text-dark" onClick={() => handleActionClick(selectedProfile.id, 'Moved')}>Delete</Button>
+    <Button variant="primary" className="mb-2 mb-md-0 bg-transparent text-dark" onClick={() => handleActionClick(selectedProfile.id, 'Moved')}>Next</Button>
   </Modal.Footer>
 </Modal>
 

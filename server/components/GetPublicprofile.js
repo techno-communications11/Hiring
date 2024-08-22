@@ -1,4 +1,4 @@
-import prisma from "../lib/prisma.js";
+import prisma from "../lib/Prisma.js";
 
 export const GetPublicProfile = async (req, res) => {
   try {

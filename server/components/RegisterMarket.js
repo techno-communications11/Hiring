@@ -1,4 +1,4 @@
-import prisma from '../lib/prisma.js';
+import prisma from "../lib/Prisma.js";
 
 const registerMarket = async (req, res) => {
   const { market } = req.body;

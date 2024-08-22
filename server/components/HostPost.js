@@ -1,9 +1,9 @@
-import prisma from "../lib/prisma.js";
+import prisma from "../lib/Prisma.js";
 export const HostPost=async(req,res)=>{
     const { name, email, calendlyUsername } = req.body;
 
   try {
-    const newHost = await prisma.hosts.create({
+    const newHost = await prisma.user.create({
       data: {
         name,
         email,

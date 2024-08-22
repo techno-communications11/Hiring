@@ -1,10 +1,9 @@
-import prisma from "../lib/prisma.js";
+import prisma from "../lib/Prisma.js";
 
 const NewprofileCounts = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    // Get user market (adjust this based on your actual logic to get the user's market)
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { market: true },
@@ -16,7 +15,6 @@ const NewprofileCounts = async (req, res) => {
 
     const market = user.market;
 
-    // Query to count profiles with empty profileStatus by market
     const counts = await prisma.application.groupBy({
       by: ['market'],
       where: {
@@ -28,13 +26,11 @@ const NewprofileCounts = async (req, res) => {
       },
     });
 
-    // Prepare the response count object
     const count = counts.reduce((acc, item) => {
       acc[item.market] = item._count.id;
       return acc;
     }, {});
 
-    // Include totalProfiles as the sum of all profiles with empty profileStatus
     count.totalProfiles = counts.reduce((total, item) => total + item._count.id, 0);
 
     res.status(200).json(count);

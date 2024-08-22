@@ -1,4 +1,4 @@
-import prisma from "../lib/prisma.js";
+import prisma from "../lib/Prisma.js";
 
 export const GetIndividualHost = async (req, res) => {
   const { id } = req.query; 
@@ -9,8 +9,8 @@ export const GetIndividualHost = async (req, res) => {
   }
 
   try {
-    const hostData = await prisma.hosts.findUnique({
-      where: { id: id }, // Use hostId here
+    const hostData = await prisma.user.findUnique({
+      where: { id: id },
       select: { name: true, email: true },
     });
 

@@ -7,7 +7,8 @@ import axios from 'axios';
 function AppNavbar() {
   const navigate = useNavigate(); 
   const [error, setError] = useState('');
-  const [counts, setCounts] = useState({}); // Adjusted from '' to an empty object
+  const [counts, setCounts] = useState({}); 
+  const role=localStorage.getItem('role');
 
   const handleLogout = async () => {
     try {
@@ -16,7 +17,7 @@ function AppNavbar() {
       });
 
       localStorage.removeItem('token');
-      navigate('/login');
+      navigate('/public');
     } catch (error) {
       console.error("Error logging out:", error);
     }
@@ -35,7 +36,7 @@ function AppNavbar() {
     };
 
     fetchCounts();
-  }, []);
+  }, [counts]);
 
   return (
     <Navbar style={{ backgroundColor:'#E1017'}} expand="lg" className='shadow-sm'>
@@ -46,8 +47,19 @@ function AppNavbar() {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarSupportedContent" />
         <Navbar.Collapse id="navbarSupportedContent">
+        
           <Nav className="ms-auto">
-            <Nav.Link
+            {
+              role==='Screening Manager'&& <Nav.Link as={Link} to="/screnning" className='fw-bolder text-primary'>
+              List Profile
+            </Nav.Link>
+            }
+         
+            {role==='Admin'&&<Nav.Link as={Link} to="/register" className='fw-bolder text-primary'>
+              register
+            </Nav.Link>}
+            {
+              role==='Screening Manager'&& <Nav.Link
               as={Link}
               to="/new"
               className='fw-bolder'
@@ -57,21 +69,23 @@ function AppNavbar() {
                 background: 'linear-gradient(90deg, rgba(63,94,251,1) 0%, rgba(180,27,148,1) 81%)',
                 WebkitBackgroundClip: 'text',
                 backgroundClip: 'text',
-                color: 'transparent', // Hide default text color
-                fontWeight: 'bold', // Make text bold
+                color: 'transparent', 
+                fontWeight: 'bold', 
               }}
             >
               New{counts.totalProfiles>0&&
               <sup className='text-white bg-danger px-1 rounded-circle' style={{fontSize:'10px' }}>
                 {counts.totalProfiles}
-              </sup>}
+              </sup> }
+              <span>{error}</span>
             </Nav.Link>
+            }
+            
             <Nav.Link as={Link} to="/profile">
               <FaUser className='me-4' />
             </Nav.Link>
-            <Nav.Link as={Link} to="/host">
-             Add Host
-            </Nav.Link>
+           
+            
             <Button variant="danger" className='me-4' onClick={handleLogout}>
               Logout
             </Button>

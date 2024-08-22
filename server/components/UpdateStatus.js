@@ -1,4 +1,4 @@
-import prisma from '../lib/prisma.js';
+import prisma from "../lib/Prisma.js";
 
 export const UpdateStatus = async (req, res) => {
   const { profileId, action,comment } = req.body;

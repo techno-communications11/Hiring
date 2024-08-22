@@ -2,27 +2,25 @@ import React, { useState, useRef, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Dropdown from 'react-bootstrap/Dropdown';
-import Modal from 'react-bootstrap/Modal';
 import axios from 'axios';
-import Login from './Login';
 
-function Public() {
+function Screening() {
   const [error, setError] = useState('');
   const [selectedMarket, setSelectedMarket] = useState('');
   const [markets, setMarkets] = useState([]);
-  const [showLoginModal, setShowLoginModal] = useState(false);
-
   const nameRef = useRef();
   const emailRef = useRef();
   const phoneRef = useRef();
   const referredByRef = useRef();
   const referenceNtidRef = useRef();
+//   const [showModel,setShowModal]=useState(false);
 
   const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const regexPhone = /^[0-9]{10}$/;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    event.stopPropagation();
 
     const nameValid = nameRef.current?.value.trim() !== '';
     const emailValid = regexEmail.test(emailRef.current?.value);
@@ -83,21 +81,17 @@ function Public() {
 
     fetchMarkets();
   }, []);
-
-  const handleLoginClick = () => {
-    setShowLoginModal(true);
-  };
-
-  const handleCloseLoginModal = () => {
-    setShowLoginModal(false);
-  };
+//    const handleOpen=()=>{
+//  setShowModal(!showModel)
+//    }
+//    console.log(showModel)
 
   return (
-    <div className='container-fluid d-flex justify-content-center align-items-center vh-100 bg-light'>
-      <div className='row w-100 gx-5'>
-        <div className='col-12 col-md-6 col-lg-5'>
-          <Form className='shadow-lg bg-white p-5 rounded-4' onSubmit={handleSubmit}>
-            <h3 className='text-center mb-4 fw-bold text-primary'>Candidate Details Form</h3>
+    <div className=' container-fluid d-flex justify-content-center  align-items-center mt-4'>
+      <div className='row w-50 gx-3'>
+        <div className='col-12 '>
+          <Form className='shadow-lg bg-white p-4 rounded-3' onSubmit={handleSubmit}>
+            <h3 className='text-center mb-4' style={{ fontFamily: "monospace" }}>Register Candidate</h3>
 
             <Form.Group className="mb-3" controlId="formBasicName">
               <Form.Control
@@ -158,11 +152,12 @@ function Public() {
                       {market.market}
                     </Dropdown.Item>
                   ))}
+                  {/* <span className='mx-3' style={{cursor:'pointer'}} onClick={()=>handleOpen()}>Others</span> */}
                 </Dropdown.Menu>
               </Dropdown>
             </Form.Group>
 
-            <Button className='w-100' variant="primary" type="submit">
+            <Button className='w-100' variant="secondary" type="submit">
               Submit
             </Button>
 
@@ -170,21 +165,10 @@ function Public() {
           </Form>
         </div>
 
-        <div className='col-12 col-md-6 col-lg-5 d-flex flex-column justify-content-center align-items-center'>
-          <div className="text-center w-100">
-            <h3 className='mb-4 text-dark fw-bolder fs-1'>HR Login</h3>
-            <Button className='w-75' variant="secondary" onClick={handleLoginClick}>Login</Button>
-          </div>
-        </div>
+       
       </div>
-
-      <Modal show={showLoginModal} onHide={handleCloseLoginModal} centered>
-        <Modal.Body>
-          <Login />
-        </Modal.Body>
-      </Modal>
     </div>
   );
 }
 
-export default Public;
+export default Screening;

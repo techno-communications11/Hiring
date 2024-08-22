@@ -1,4 +1,4 @@
-import prisma from "../lib/prisma.js";
+import prisma from "../lib/Prisma.js";
 export const GetMarkets=async(req,res)=>{
     try {
         const markets = await prisma.market.findMany();

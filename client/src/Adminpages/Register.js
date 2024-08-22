@@ -10,10 +10,15 @@ function Register() {
   const [error, setError] = useState('');
   const [activeForm, setActiveForm] = useState('register'); // 'register' or 'market'
   const [markets, setMarkets] = useState([]);
+  const [roles, setRoles] = useState(['Admin', 'Screening Manager', 'Interviewer', 'HR', 'Trainer']);
   const [selectedMarket, setSelectedMarket] = useState('');
+  const [selectedRole, setSelectedRole] = useState('');
+  const [calendlyUsername, setCalendlyUsername] = useState('');
+  
   const emailRef = useRef();
   const passwordRef = useRef();
   const marketRef = useRef();
+  const nameRef = useRef();
 
   const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -38,42 +43,57 @@ function Register() {
 
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
+    const name = nameRef.current.value;
 
     const emailValid = regexEmail.test(email);
     const passwordValid = regexPassword.test(password);
 
-    if (!emailValid && !passwordValid) {
-      setError('Please enter a valid email address and a valid password.');
-    } else if (!emailValid) {
+    // Validate required fields
+    if (!name || !email || !password || !selectedRole) {
+      setError('Please fill in all required fields.');
+      return;
+    }
+
+    if (!emailValid) {
       setError('Please enter a valid email address.');
-    } else if (!passwordValid) {
+      return;
+    }
+
+    if (!passwordValid) {
       setError('Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character.');
-    } else {
-      setError('');
-      try {
-        // Make API call to register user
-        const response = await axios.post('http://localhost:3001/api/auth/register', {
-          email,
-          password,
-          market: selectedMarket
-        });
-        if (response.status === 201) {
-          console.log("User registered successfully");
-        }
-      } catch (error) {
-        setError('Failed to register user. Please try again later.');
-      }finally{
-        emailRef.current.value=""
-        passwordRef.current.value=""
-        setSelectedMarket("")
+      return;
+    }
+
+    setError('');
+    try {
+      // Make API call to register user
+      const response = await axios.post('http://localhost:3001/api/auth/register', {
+        name,
+        email,
+        password,
+        market: selectedMarket,
+        role: selectedRole,
+        calendlyUsername
+      });
+      if (response.status === 201) {
+        console.log("User registered successfully");
+        // Reset form fields
+        emailRef.current.value = "";
+        passwordRef.current.value = "";
+        nameRef.current.value = "";
+        setSelectedMarket("");
+        setSelectedRole("");
+        setCalendlyUsername("");
       }
+    } catch (error) {
+      setError('Failed to register user. Please try again later.');
     }
   };
 
   const handlePasswordShow = () => {
     setShowPassword(!showPassword);
   };
- const [marketData,setMaketData]=useState('')
+
   const handleMarket = async () => {
     const market = marketRef.current.value;
 
@@ -89,14 +109,13 @@ function Register() {
       if (response.status === 201) {
         alert('Market registered successfully');
        
-     
         const marketsResponse = await axios.get('http://localhost:3001/api/auth/getmarkets');
         setMarkets(marketsResponse.data);
       }
     } catch (error) {
       alert('Failed to register market. Please try again later.');
-    } finally{
-      marketRef.current.value="";
+    } finally {
+      marketRef.current.value = "";
     }
   };
 
@@ -121,6 +140,16 @@ function Register() {
       {activeForm === 'register' && (
         <Form className='w-25 shadow-lg p-3 rounded-3' onSubmit={handleSubmit}>
           <h3>Register</h3>
+
+          <Form.Group className="mb-3" controlId="formBasicName">
+            <Form.Control 
+              ref={nameRef} 
+              className="shadow-none border" 
+              type="text" 
+              placeholder="Enter name" 
+              required 
+            />
+          </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Control 
               ref={emailRef} 
@@ -147,13 +176,37 @@ function Register() {
             <span className='text-danger' aria-live="polite">{error}</span>
           </Form.Group>
 
+          <Form.Group className="mb-3" controlId="formBasicRole">
+            <Dropdown onSelect={(e) => setSelectedRole(e)}>
+              <Dropdown.Toggle className='w-100 bg-transparent text-dark border-secondary' id="dropdown-basic">
+                {selectedRole || "Select Role"}
+              </Dropdown.Toggle>
+              <Dropdown.Menu className='w-100 overflow-auto'>
+                {roles.map((role, index) => (
+                  <Dropdown.Item key={index} eventKey={role}>
+                    {role}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </Form.Group>
+
+          <Form.Group controlId="formCalendlyUsername" className='my-3'>
+            <Form.Control
+              type="text"
+              placeholder="Enter Calendly username (optional)"
+              value={calendlyUsername}
+              onChange={(e) => setCalendlyUsername(e.target.value)}
+            />
+          </Form.Group>
+          
           <Form.Group className="mb-3" controlId="formBasicMarket">
             <Dropdown onSelect={(e) => setSelectedMarket(e)}>
               <Dropdown.Toggle className='w-100 bg-transparent text-dark border-secondary' id="dropdown-basic">
                 {selectedMarket || "Select Market"}
               </Dropdown.Toggle>
-              <Dropdown.Menu className='w-100 overflow-auto' style={{height:'15rem'}}>
-                {markets.sort((a,b)=>a.market.localeCompare(b.market)).map((market) => (
+              <Dropdown.Menu className='w-100 overflow-auto' style={{height: '15rem'}}>
+                {markets.sort((a, b) => a.market.localeCompare(b.market)).map((market) => (
                   <Dropdown.Item key={market.id} eventKey={market.market}>
                     {market.market}
                   </Dropdown.Item>
